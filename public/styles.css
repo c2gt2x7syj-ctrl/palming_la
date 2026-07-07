@@ -388,6 +388,10 @@ textarea {
   margin-bottom: 8px;
 }
 
+.result-actions {
+  margin-bottom: 18px;
+}
+
 .score-badge {
   display: inline-flex;
   align-items: baseline;

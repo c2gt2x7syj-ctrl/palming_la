@@ -21,9 +21,13 @@ const instagramTipsEl = document.querySelector("#instagram-tips");
 const historyStatusEl = document.querySelector("#history-status");
 const historyGroupsEl = document.querySelector("#history-groups");
 const refreshHistoryButton = document.querySelector("#refresh-history");
+const saveAnalysisButton = document.querySelector("#save-analysis");
+const saveStatusEl = document.querySelector("#save-status");
 const submitButtons = document.querySelectorAll(".primary-button");
 
 let imageDataUrl = "";
+let currentPayload = null;
+let currentResult = null;
 
 function renderList(element, items) {
   if (!element) return;
@@ -135,6 +139,49 @@ async function loadHistory() {
   }
 }
 
+async function saveCurrentAnalysis() {
+  if (!currentPayload || !currentResult || !saveStatusEl || !saveAnalysisButton) {
+    return;
+  }
+
+  saveStatusEl.textContent = "Salvando análise...";
+  saveAnalysisButton.disabled = true;
+
+  try {
+    const response = await fetch("/api/save-analysis", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        input: currentPayload,
+        result: currentResult
+      })
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Falha ao salvar análise.");
+    }
+
+    if (payload.saved) {
+      saveStatusEl.textContent = "Análise salva com sucesso.";
+      loadHistory();
+    } else if (payload.reason === "supabase_table_missing") {
+      saveStatusEl.textContent = "Falta criar a tabela de análises no Supabase.";
+    } else if (payload.reason === "supabase_not_configured") {
+      saveStatusEl.textContent = "Supabase ainda não configurado.";
+    } else {
+      saveStatusEl.textContent = "Não foi possível salvar a análise agora.";
+    }
+  } catch (error) {
+    saveStatusEl.textContent = "Não foi possível salvar a análise agora.";
+  } finally {
+    saveAnalysisButton.disabled = false;
+  }
+}
+
 imageInput.addEventListener("change", async (event) => {
   const [file] = event.target.files || [];
   if (!file) {
@@ -155,8 +202,16 @@ form.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
   const payload = Object.fromEntries(formData.entries());
   payload.imageDataUrl = imageDataUrl;
+  currentPayload = payload;
+  currentResult = null;
 
   statusEl.textContent = "Gerando título, descrição e nota...";
+  if (saveStatusEl) {
+    saveStatusEl.textContent = "Gere uma análise para liberar o salvamento.";
+  }
+  if (saveAnalysisButton) {
+    saveAnalysisButton.disabled = true;
+  }
   submitButtons.forEach((submitButton) => {
     submitButton.disabled = true;
   });
@@ -175,6 +230,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     const result = await response.json();
+    currentResult = result;
 
     setText(suggestedTitleEl, result.suggestedTitle || "Sem título sugerido.");
     setText(descriptionEl, result.description || "Sem descrição sugerida.");
@@ -219,7 +275,12 @@ form.addEventListener("submit", async (event) => {
     );
 
     statusEl.textContent = "Análise gerada com sucesso.";
-    loadHistory();
+    if (saveStatusEl) {
+      saveStatusEl.textContent = "Clique em salvar análise para guardar este resultado.";
+    }
+    if (saveAnalysisButton) {
+      saveAnalysisButton.disabled = false;
+    }
   } catch (error) {
     statusEl.textContent = "Não foi possível gerar a análise agora. Tente novamente.";
   } finally {
@@ -231,6 +292,10 @@ form.addEventListener("submit", async (event) => {
 
 if (refreshHistoryButton) {
   refreshHistoryButton.addEventListener("click", loadHistory);
+}
+
+if (saveAnalysisButton) {
+  saveAnalysisButton.addEventListener("click", saveCurrentAnalysis);
 }
 
 loadHistory();

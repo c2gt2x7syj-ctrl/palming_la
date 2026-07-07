@@ -46,15 +46,33 @@ const server = createServer(async (req, res) => {
         try {
           const data = JSON.parse(body || "{}");
           const result = await generateResult(data);
-          const persistence = await saveAnalysis(data, result).catch((error) => ({
-            saved: false,
-            reason: error.message
-          }));
-          result.persistence = persistence;
           sendJson(res, 200, result);
         } catch {
           sendJson(res, 500, {
             error: "Não foi possível gerar a análise."
+          });
+        }
+      });
+      return;
+    }
+
+    if (req.method === "POST" && req.url === "/api/save-analysis") {
+      let body = "";
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+
+      req.on("end", async () => {
+        try {
+          const data = JSON.parse(body || "{}");
+          const persistence = await saveAnalysis(data.input || {}, data.result || {}).catch((error) => ({
+            saved: false,
+            reason: error.message
+          }));
+          sendJson(res, 200, persistence);
+        } catch {
+          sendJson(res, 500, {
+            error: "Não foi possível salvar a análise."
           });
         }
       });
