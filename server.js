@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { generateResult } from "./lib/generate.js";
+import { saveAnalysis } from "./lib/supabase.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -45,6 +46,11 @@ const server = createServer(async (req, res) => {
         try {
           const data = JSON.parse(body || "{}");
           const result = await generateResult(data);
+          const persistence = await saveAnalysis(data, result).catch((error) => ({
+            saved: false,
+            reason: error.message
+          }));
+          result.persistence = persistence;
           sendJson(res, 200, result);
         } catch {
           sendJson(res, 500, {

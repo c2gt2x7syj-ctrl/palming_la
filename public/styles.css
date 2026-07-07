@@ -305,6 +305,7 @@ label span {
 }
 
 input,
+select,
 textarea {
   width: 100%;
   border: 1px solid rgba(53, 50, 39, 0.1);
@@ -318,6 +319,7 @@ textarea {
 }
 
 input:focus,
+select:focus,
 textarea:focus {
   border-color: var(--olive);
   box-shadow: 0 0 0 4px rgba(76, 90, 66, 0.12);

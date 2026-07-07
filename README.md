@@ -67,3 +67,27 @@ Foi criada uma interface leve para uso direto do cliente:
 
 - Com `OPENAI_API_KEY` configurada, a pagina usa analise por IA com imagem.
 - Sem chave, entra em modo local de fallback e continua gerando sugestoes basicas por regra.
+
+### Supabase
+
+O projeto agora esta pronto para salvar cada analise no Supabase sem quebrar a geracao atual.
+
+Arquivos relevantes:
+
+- [lib/supabase.js](/Users/rawierqueiroga/Documents/Codex/2026-07-07/https-www-enjoei-com-br-palmingbrxo/lib/supabase.js)
+- [supabase/schema.sql](/Users/rawierqueiroga/Documents/Codex/2026-07-07/https-www-enjoei-com-br-palmingbrxo/supabase/schema.sql)
+
+Variaveis de ambiente esperadas:
+
+- `SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL` tambem pode ser usada como fallback para a URL
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Com essas variaveis ausentes:
+
+- a plataforma continua funcionando normalmente
+- a analise nao e salva
+
+Com essas variaveis presentes:
+
+- toda geracao feita em `/api/generate` tambem e persistida na tabela `analyses`
