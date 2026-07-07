@@ -466,7 +466,7 @@ h2 {
   .form-panel,
   .result-panel {
     padding: 16px;
-    border-radius: 22px;
+    border-radius: 0;
   }
 
   .intro-points {

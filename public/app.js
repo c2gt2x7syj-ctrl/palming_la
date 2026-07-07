@@ -13,6 +13,7 @@ const photoReviewEl = document.querySelector("#photo-review");
 const scoreBadgeEl = document.querySelector("#score-badge");
 const hotScoreEl = document.querySelector("#hot-score");
 const hotStarsEl = document.querySelector("#hot-stars");
+const submitButtons = document.querySelectorAll(".primary-button");
 
 let imageDataUrl = "";
 
@@ -60,8 +61,10 @@ form.addEventListener("submit", async (event) => {
   const payload = Object.fromEntries(formData.entries());
   payload.imageDataUrl = imageDataUrl;
 
-  statusEl.textContent = "Gerando titulo, descricao e nota...";
-  button.disabled = true;
+  statusEl.textContent = "Gerando título, descrição e nota...";
+  submitButtons.forEach((submitButton) => {
+    submitButton.disabled = true;
+  });
 
   try {
     const response = await fetch("/api/generate", {
@@ -71,6 +74,10 @@ form.addEventListener("submit", async (event) => {
       },
       body: JSON.stringify(payload)
     });
+
+    if (!response.ok) {
+      throw new Error("Falha ao gerar a análise.");
+    }
 
     const result = await response.json();
 
@@ -90,33 +97,28 @@ form.addEventListener("submit", async (event) => {
 
     renderList(
       alternateTitlesEl,
-      result.alternateTitles?.length ? result.alternateTitles : ["Sem variacoes suficientes."]
+      result.alternateTitles?.length ? result.alternateTitles : ["Sem variações suficientes."]
     );
     alternateTitlesEl.classList.remove("muted");
 
     renderList(
       scoreReasonsEl,
-      result.scoreReasons?.length ? result.scoreReasons : ["Sem observacoes."]
+      result.scoreReasons?.length ? result.scoreReasons : ["Sem observações."]
     );
     scoreReasonsEl.classList.remove("muted");
 
     renderList(
       photoReviewEl,
-      result.photoReview?.length ? result.photoReview : ["Sem observacoes."]
+      result.photoReview?.length ? result.photoReview : ["Sem observações."]
     );
     photoReviewEl.classList.remove("muted");
 
-    statusEl.textContent =
-      result.source === "openai"
-        ? "Analise feita com IA."
-        : "Analise feita com modo local de fallback.";
-
-    if (result.warning) {
-      statusEl.textContent += ` ${result.warning}`;
-    }
+    statusEl.textContent = "Análise gerada com sucesso.";
   } catch (error) {
-    statusEl.textContent = "Nao foi possivel gerar o anuncio agora.";
+    statusEl.textContent = "Não foi possível gerar a análise agora. Tente novamente.";
   } finally {
-    button.disabled = false;
+    submitButtons.forEach((submitButton) => {
+      submitButton.disabled = false;
+    });
   }
 });
