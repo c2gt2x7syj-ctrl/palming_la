@@ -139,12 +139,13 @@ async function loadHistory() {
   }
 }
 
-async function saveCurrentAnalysis() {
+async function persistCurrentAnalysis(options = {}) {
   if (!currentPayload || !currentResult || !saveStatusEl || !saveAnalysisButton) {
-    return;
+    return { saved: false, reason: "missing_analysis" };
   }
 
-  saveStatusEl.textContent = "Salvando análise...";
+  const mode = options.mode === "auto" ? "auto" : "manual";
+  saveStatusEl.textContent = mode === "auto" ? "Salvando análise automaticamente..." : "Salvando análise...";
   saveAnalysisButton.disabled = true;
 
   try {
@@ -166,7 +167,8 @@ async function saveCurrentAnalysis() {
     }
 
     if (payload.saved) {
-      saveStatusEl.textContent = "Análise salva com sucesso.";
+      saveStatusEl.textContent =
+        mode === "auto" ? "Análise salva automaticamente." : "Análise salva com sucesso.";
       loadHistory();
     } else if (payload.reason === "supabase_table_missing") {
       saveStatusEl.textContent = "Falta criar a tabela de análises no Supabase.";
@@ -175,11 +177,18 @@ async function saveCurrentAnalysis() {
     } else {
       saveStatusEl.textContent = "Não foi possível salvar a análise agora.";
     }
+
+    return payload;
   } catch (error) {
     saveStatusEl.textContent = "Não foi possível salvar a análise agora.";
+    return { saved: false, reason: error.message };
   } finally {
     saveAnalysisButton.disabled = false;
   }
+}
+
+async function saveCurrentAnalysis() {
+  await persistCurrentAnalysis({ mode: "manual" });
 }
 
 imageInput.addEventListener("change", async (event) => {
@@ -276,10 +285,15 @@ form.addEventListener("submit", async (event) => {
 
     statusEl.textContent = "Análise gerada com sucesso.";
     if (saveStatusEl) {
-      saveStatusEl.textContent = "Clique em salvar análise para guardar este resultado.";
+      saveStatusEl.textContent = "Gerada. Tentando salvar automaticamente...";
     }
     if (saveAnalysisButton) {
       saveAnalysisButton.disabled = false;
+    }
+
+    const persistence = await persistCurrentAnalysis({ mode: "auto" });
+    if (persistence?.saved && saveStatusEl) {
+      saveStatusEl.textContent = "Análise salva automaticamente. Você ainda pode salvar novamente.";
     }
   } catch (error) {
     statusEl.textContent = "Não foi possível gerar a análise agora. Tente novamente.";
