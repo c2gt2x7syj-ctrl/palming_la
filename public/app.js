@@ -12,6 +12,7 @@ const scoreReasonsEl = document.querySelector("#score-reasons");
 const photoReviewEl = document.querySelector("#photo-review");
 const scoreBadgeEl = document.querySelector("#score-badge");
 const hotScoreEl = document.querySelector("#hot-score");
+const hotStarsEl = document.querySelector("#hot-stars");
 
 let imageDataUrl = "";
 
@@ -31,6 +32,11 @@ function readFileAsDataUrl(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function renderStars(score) {
+  const total = 5;
+  return Array.from({ length: total }, (_, index) => (index < score ? "★" : "☆")).join("");
 }
 
 imageInput.addEventListener("change", async (event) => {
@@ -79,6 +85,8 @@ form.addEventListener("submit", async (event) => {
 
     hotScoreEl.textContent = result.hotScore;
     scoreBadgeEl.classList.remove("hidden");
+    hotStarsEl.textContent = renderStars(result.hotScore);
+    hotStarsEl.classList.remove("muted");
 
     renderList(
       alternateTitlesEl,

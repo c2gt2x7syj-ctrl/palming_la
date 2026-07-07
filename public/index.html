@@ -8,67 +8,113 @@
   </head>
   <body>
     <main class="shell">
-      <section class="intro">
-        <p class="eyebrow">Palming Brecho</p>
-        <h1>Agente Enjoei</h1>
-        <p class="lede">
-          Suba a foto, preencha o essencial e receba um titulo sugerido, descricao pronta
-          e uma nota de 1 a 5 para o potencial de venda quente.
-        </p>
+      <header class="topbar panel">
+        <div class="brand-lockup">
+          <img class="brand-logo" src="/logo-palming.jpg" alt="Logo Palming" />
+          <div>
+            <p class="brand-name">Palming Brecho</p>
+            <p class="brand-subtitle">Agente para anuncios na Enjoei</p>
+          </div>
+        </div>
+        <p class="topbar-note">Desktop e mobile com o mesmo fluxo.</p>
+      </header>
+
+      <section class="intro panel">
+        <div class="intro-copy">
+          <p class="eyebrow">Ferramenta simples para o cliente</p>
+          <h1>Agente Enjoei</h1>
+          <p class="lede">
+            Crie anuncios que vendem mais. Suba a foto, preencha o essencial e receba
+            titulo, descricao e uma nota de 1 a 5 para o potencial de venda quente.
+          </p>
+          <ul class="intro-points">
+            <li>Foto + dados basicos</li>
+            <li>Titulo pronto para busca</li>
+            <li>Descricao pronta para colar</li>
+            <li>Leitura rapida da chance de giro</li>
+          </ul>
+        </div>
+        <div class="intro-score-card">
+          <p class="mini-kicker">Leitura do agente</p>
+          <div class="desktop-score-shell">
+            <strong>1 a 5</strong>
+            <span>quanto mais alto, mais quente tende a ser a venda</span>
+          </div>
+        </div>
       </section>
 
       <section class="workspace">
         <form id="product-form" class="panel form-panel">
-          <label class="upload-zone" for="image">
-            <input id="image" name="image" type="file" accept="image/*" />
-            <span class="upload-label">Foto do produto</span>
-            <span class="upload-help">Toque para escolher uma imagem</span>
-            <img id="preview" class="preview hidden" alt="Preview do produto" />
-          </label>
+          <section class="form-group">
+            <div class="group-heading">
+              <p class="group-index">1.</p>
+              <div>
+                <h2 class="group-title">Foto do produto</h2>
+                <p class="group-help">Use uma imagem limpa do produto, sem print de rede social.</p>
+              </div>
+            </div>
 
-          <div class="grid">
+            <label class="upload-zone" for="image">
+              <input id="image" name="image" type="file" accept="image/*" />
+              <span class="upload-label">Enviar foto</span>
+              <span class="upload-help">Toque para escolher uma imagem</span>
+              <img id="preview" class="preview hidden" alt="Preview do produto" />
+            </label>
+          </section>
+
+          <section class="form-group">
+            <div class="group-heading">
+              <p class="group-index">2.</p>
+              <div>
+                <h2 class="group-title">Informacoes do produto</h2>
+                <p class="group-help">Quanto mais claro o preenchimento, melhor o anuncio.</p>
+              </div>
+            </div>
+
+            <div class="grid">
+              <label>
+                <span>Nome do produto</span>
+                <input id="productName" name="productName" placeholder="ex: blazer espinha de peixe" />
+              </label>
+
+              <label>
+                <span>Categoria</span>
+                <input id="category" name="category" placeholder="ex: blazer, vestido, vinil" />
+              </label>
+
+              <label>
+                <span>Marca</span>
+                <input id="brand" name="brand" placeholder="se souber" />
+              </label>
+
+              <label>
+                <span>Cor</span>
+                <input id="color" name="color" placeholder="ex: grafite, preto, cru" />
+              </label>
+
+              <label>
+                <span>Tamanho</span>
+                <input id="size" name="size" placeholder="ex: M, 40, unico" />
+              </label>
+
+              <label>
+                <span>Estado</span>
+                <input id="condition" name="condition" placeholder="ex: muito bom, com sinais leves" />
+              </label>
+            </div>
+
             <label>
-              <span>Nome do produto</span>
-              <input id="productName" name="productName" placeholder="ex: blazer espinha de peixe" />
+              <span>Medidas</span>
+              <textarea id="measures" name="measures" rows="3" placeholder="ex: ombro 44 cm, busto 52 cm, comprimento 74 cm"></textarea>
             </label>
 
             <label>
-              <span>Categoria</span>
-              <input id="category" name="category" placeholder="ex: blazer, vestido, vinil" />
+              <span>Observacoes</span>
+              <textarea id="notes" name="notes" rows="4" placeholder="tecido, avarias, caimento, epoca, detalhes importantes"></textarea>
             </label>
+          </section>
 
-            <label>
-              <span>Marca</span>
-              <input id="brand" name="brand" placeholder="se souber" />
-            </label>
-
-            <label>
-              <span>Cor</span>
-              <input id="color" name="color" placeholder="ex: grafite, preto, cru" />
-            </label>
-
-            <label>
-              <span>Tamanho</span>
-              <input id="size" name="size" placeholder="ex: M, 40, unico" />
-            </label>
-
-            <label>
-              <span>Estado</span>
-              <input id="condition" name="condition" placeholder="ex: muito bom, com sinais leves" />
-            </label>
-          </div>
-
-          <label>
-            <span>Medidas</span>
-            <textarea id="measures" name="measures" rows="3" placeholder="ex: ombro 44 cm, busto 52 cm, comprimento 74 cm"></textarea>
-          </label>
-
-          <label>
-            <span>Observacoes</span>
-            <textarea id="notes" name="notes" rows="4" placeholder="tecido, avarias, caimento, epoca, detalhes importantes"></textarea>
-          </label>
-
-          <button type="submit" class="primary-button">Gerar anuncio</button>
+          <button type="submit" class="primary-button primary-button-desktop">Gerar anuncio</button>
           <p id="status" class="status"></p>
         </form>
 
@@ -81,7 +127,7 @@
             </div>
           </div>
 
-          <section class="result-block">
+          <section class="result-block result-block-highlight">
             <h2>Titulo sugerido</h2>
             <p id="suggested-title" class="text-output muted">Preencha o formulario para gerar.</p>
           </section>
@@ -101,6 +147,7 @@
           <section class="result-block">
             <h2>Venda quente</h2>
             <p id="hot-label" class="text-output muted">A nota vai de 1 a 5.</p>
+            <div id="hot-stars" class="hot-stars muted">☆☆☆☆☆</div>
             <ul id="score-reasons" class="bullet-list muted">
               <li>Os motivos aparecem aqui.</li>
             </ul>
@@ -114,6 +161,12 @@
           </section>
         </aside>
       </section>
+
+      <div class="mobile-submit-bar">
+        <button type="submit" form="product-form" class="primary-button primary-button-mobile">
+          Gerar anuncio
+        </button>
+      </div>
     </main>
 
     <script src="/app.js" type="module"></script>
