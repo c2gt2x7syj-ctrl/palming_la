@@ -193,7 +193,7 @@ h1 {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.8fr) minmax(280px, 0.8fr);
   gap: 22px;
   align-items: start;
 }
@@ -201,6 +201,12 @@ h1 {
 .form-panel,
 .result-panel {
   padding: 22px;
+}
+
+.instagram-panel {
+  position: sticky;
+  top: 18px;
+  height: fit-content;
 }
 
 .form-group + .form-group {
@@ -436,6 +442,15 @@ h2 {
 
   h1 {
     max-width: none;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.95fr);
+  }
+
+  .instagram-panel {
+    grid-column: 1 / -1;
+    position: static;
   }
 }
 

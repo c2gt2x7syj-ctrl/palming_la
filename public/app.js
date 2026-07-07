@@ -13,6 +13,11 @@ const photoReviewEl = document.querySelector("#photo-review");
 const scoreBadgeEl = document.querySelector("#score-badge");
 const hotScoreEl = document.querySelector("#hot-score");
 const hotStarsEl = document.querySelector("#hot-stars");
+const instagramHookEl = document.querySelector("#instagram-hook");
+const instagramCaptionEl = document.querySelector("#instagram-caption");
+const instagramCtaEl = document.querySelector("#instagram-cta");
+const instagramHashtagsEl = document.querySelector("#instagram-hashtags");
+const instagramTipsEl = document.querySelector("#instagram-tips");
 const submitButtons = document.querySelectorAll(".primary-button");
 
 let imageDataUrl = "";
@@ -112,6 +117,27 @@ form.addEventListener("submit", async (event) => {
       result.photoReview?.length ? result.photoReview : ["Sem observações."]
     );
     photoReviewEl.classList.remove("muted");
+
+    instagramHookEl.textContent = result.instagramHook || "Sem gancho sugerido.";
+    instagramHookEl.classList.remove("muted");
+
+    instagramCaptionEl.textContent = result.instagramCaption || "Sem legenda sugerida.";
+    instagramCaptionEl.classList.remove("muted");
+
+    instagramCtaEl.textContent = result.instagramCta || "Sem chamada para ação sugerida.";
+    instagramCtaEl.classList.remove("muted");
+
+    renderList(
+      instagramHashtagsEl,
+      result.instagramHashtags?.length ? result.instagramHashtags : ["Sem hashtags sugeridas."]
+    );
+    instagramHashtagsEl.classList.remove("muted");
+
+    renderList(
+      instagramTipsEl,
+      result.instagramTips?.length ? result.instagramTips : ["Sem observações."]
+    );
+    instagramTipsEl.classList.remove("muted");
 
     statusEl.textContent = "Análise gerada com sucesso.";
   } catch (error) {
