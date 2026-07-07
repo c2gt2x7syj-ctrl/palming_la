@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { generateResult } from "./lib/generate.js";
-import { saveAnalysis } from "./lib/supabase.js";
+import { fetchAnalyses, saveAnalysis } from "./lib/supabase.js";
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "127.0.0.1";
@@ -58,6 +58,12 @@ const server = createServer(async (req, res) => {
           });
         }
       });
+      return;
+    }
+
+    if (req.method === "GET" && req.url === "/api/analyses") {
+      const payload = await fetchAnalyses();
+      sendJson(res, 200, payload);
       return;
     }
 

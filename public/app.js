@@ -18,6 +18,9 @@ const instagramCaptionEl = document.querySelector("#instagram-caption");
 const instagramCtaEl = document.querySelector("#instagram-cta");
 const instagramHashtagsEl = document.querySelector("#instagram-hashtags");
 const instagramTipsEl = document.querySelector("#instagram-tips");
+const historyStatusEl = document.querySelector("#history-status");
+const historyGroupsEl = document.querySelector("#history-groups");
+const refreshHistoryButton = document.querySelector("#refresh-history");
 const submitButtons = document.querySelectorAll(".primary-button");
 
 let imageDataUrl = "";
@@ -51,6 +54,85 @@ function readFileAsDataUrl(file) {
 function renderStars(score) {
   const total = 5;
   return Array.from({ length: total }, (_, index) => (index < score ? "★" : "☆")).join("");
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
+function renderHistoryGroups(groups) {
+  if (!historyGroupsEl) return;
+
+  if (!groups?.length) {
+    historyGroupsEl.innerHTML = '<p class="muted">Nenhuma análise salva ainda.</p>';
+    return;
+  }
+
+  historyGroupsEl.innerHTML = groups
+    .map((group) => {
+      const items = group.items
+        .map(
+          (item) => `
+            <article class="history-item">
+              <div class="history-item-top">
+                <strong>${item.suggested_title || item.product_name || "Item sem título"}</strong>
+                <span>${item.hot_score || "-"} / 5</span>
+              </div>
+              <p>${item.hot_label || "Sem leitura"}</p>
+              <p class="history-meta">${formatDate(item.created_at)} • ${item.product_type || "item"}</p>
+            </article>
+          `
+        )
+        .join("");
+
+      return `
+        <section class="history-group">
+          <div class="history-group-header">
+            <h3>${group.category}</h3>
+            <span>${group.count}</span>
+          </div>
+          <div class="history-items">${items}</div>
+        </section>
+      `;
+    })
+    .join("");
+}
+
+async function loadHistory() {
+  if (!historyStatusEl) return;
+
+  historyStatusEl.textContent = "Carregando histórico...";
+
+  try {
+    const response = await fetch("/api/analyses");
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Falha ao carregar histórico.");
+    }
+
+    if (!payload.ok) {
+      if (payload.reason === "supabase_not_configured") {
+        historyStatusEl.textContent = "Supabase ainda não configurado.";
+      } else if (payload.reason === "supabase_table_missing") {
+        historyStatusEl.textContent = "Falta criar a tabela de análises no Supabase.";
+      } else {
+        historyStatusEl.textContent = "Histórico indisponível no momento.";
+      }
+      renderHistoryGroups([]);
+      return;
+    }
+
+    historyStatusEl.textContent = `${payload.items.length} análise(s) carregada(s).`;
+    renderHistoryGroups(payload.grouped || []);
+  } catch (error) {
+    historyStatusEl.textContent = "Não foi possível carregar o histórico agora.";
+    renderHistoryGroups([]);
+  }
 }
 
 imageInput.addEventListener("change", async (event) => {
@@ -137,6 +219,7 @@ form.addEventListener("submit", async (event) => {
     );
 
     statusEl.textContent = "Análise gerada com sucesso.";
+    loadHistory();
   } catch (error) {
     statusEl.textContent = "Não foi possível gerar a análise agora. Tente novamente.";
   } finally {
@@ -145,3 +228,9 @@ form.addEventListener("submit", async (event) => {
     });
   }
 });
+
+if (refreshHistoryButton) {
+  refreshHistoryButton.addEventListener("click", loadHistory);
+}
+
+loadHistory();
